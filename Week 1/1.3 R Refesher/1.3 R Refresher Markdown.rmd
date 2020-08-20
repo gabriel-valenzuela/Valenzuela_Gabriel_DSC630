@@ -1,0 +1,86 @@
+---
+title: "1.3 R Refresher"
+author: "Gabriel Valenzuela"
+date: "6/7/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Import, Plot, Summarize, and Save Data
+
+```{r echo=FALSE}
+# Import libraries
+library(pastecs)
+library(ggplot2)
+library(hexbin)
+
+# Importing the data
+earnings <- read.csv("table1.csv")
+head(earnings, 10)
+
+# Converting to numeric
+earnings$Number.of.workers..in.thousands....Total <- as.numeric(earnings$Number.of.workers..in.thousands....Total)
+earnings$Number.of.workers..in.thousands....Men <- as.numeric(earnings$Number.of.workers..in.thousands....Men)
+earnings$Number.of.workers..in.thousands....Women <- as.numeric(earnings$Number.of.workers..in.thousands....Women)
+```
+
+
+
+```{r}
+# Summary Descriptives
+round(stat.desc(earnings$Number.of.workers..in.thousands....Men), 2)
+round(stat.desc(earnings$Number.of.workers..in.thousands....Women), 2)
+
+# Plot some of the features of several variables
+men_weekly_earnings <- earnings$Median.weekly.earnings..in.current.dollars....Men
+women_weekly_earnings <- earnings$Median.weekly.earnings..in.current.dollars....Women
+hist(men_weekly_earnings, main="Men's Weekly Earnings", xlab = "Earnings ($)")
+hist(women_weekly_earnings, main="Women's Weekly Earnings", xlab = "Earnings ($)")
+
+boxplot(men_weekly_earnings, main="Men's Weekly Earnings", xlab = "Earnings ($)")
+boxplot(women_weekly_earnings, main="Women's Weekly Earnings", xlab = "Earnings ($)")
+
+# Save data locally
+write.csv(earnings, file = 'MenVsWomenMedianEarnings.csv')
+```
+
+## 2. Explore Some Bivariate Relations
+
+```{r}
+# Bivariate Relations
+ggplot2::ggplot(earnings, ggplot2::aes(x = Year, y = men_weekly_earnings, fill = Quarter)) + ggplot2::geom_bar(stat = "identity")
+ggplot2::ggplot(earnings, ggplot2::aes(x = Year, y = women_weekly_earnings, fill = Quarter)) + ggplot2::geom_bar(stat = "identity")
+
+
+# Correlation to number of men workers and earnings
+men_employees <- earnings$Number.of.workers..in.thousands....Men
+cor.test(men_employees, men_weekly_earnings, method = "pearson")
+
+# Correlation to number of women workers and earnings
+women_employees <- earnings$Number.of.workers..in.thousands....Women
+cor.test(women_employees, women_weekly_earnings, method = "pearson")
+
+```
+
+## 3. Organize a Data Report
+```{r}
+summary(earnings)
+
+str(earnings)
+```
+
+# Results
+
+Looking at the earnings of both women and men on a weekly basis, we can easily tell that the men overall are earning more. In fact, the minimum earning for men is larger than that of women. 
+
+While exploring the bivariate relations, I witnessed the earnings for men and women increasing each year. However, even though both were increasing, the women were still earning less than men. 
+
+In running the correlation of the amount of employees and earnings of men and female workers, there was a strong positive correlation in both areas for men and women. It could be possibly due to with more more workers in an area, the earnings gathered for employees would be hirer since there are more employees being paid increasing the grand total. 
+
+With looking at the box plots, I noticed that the higher bound outliers of the women's earnings are about the same of the lower outliers of the men's earnings. With looking at the earnings totals and distributions between the men's and women's, you can tell that there is a difference in pay between the two groups no matter the industry. 
+
+
+

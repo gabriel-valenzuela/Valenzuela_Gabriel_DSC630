@@ -1,0 +1,72 @@
+---
+title: "Dodgers Marketing Promotion"
+author: "Gabriel Valenzuela"
+date: "6/20/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 2012 Dodgers Game Attendance and Promotions Data and Data Structure
+
+```{r echo=FALSE}
+
+# Import Libraries
+library(ggplot2)
+
+
+# Import Data
+game_schedule <- read.csv('dodgers_cleaned.csv')
+head(game_schedule, 10)
+str(game_schedule)
+```
+
+# Box Plots of Attendance of Games Per Day of the Week & Month
+```{r echo=FALSE}
+plot(game_schedule$day_of_week, game_schedule$attend, xlab = 'Day of Week', ylab='Attendance', main='Attendance of Games per Day of the Week')
+plot(game_schedule$month, game_schedule$attend, xlab = 'Month', ylab='Attendance', main='Attendance of Games per Month')
+```
+
+# Splitting the data for training and testing of model to be fitted for prediction of attendance
+```{r echo=FALSE}
+# Train and Test Data
+
+trainSize <- round(nrow(game_schedule) * 0.7)
+testSize <- nrow(game_schedule) - trainSize
+
+set.seed(157)
+training_indices <- sample(seq_len(nrow(game_schedule)),size=trainSize)
+trainSet <- game_schedule[training_indices, ]
+testSet <- game_schedule[-training_indices, ]
+
+# Create model parameters
+attendance_model <- (attend ~ month + day_of_week)
+
+# Model for training
+train_model <- lm(attendance_model, data = trainSet)
+summary(train_model)
+trainSet$prediction <- predict(train_model)
+
+# Model for testing
+testSet$prediction <-predict(train_model, newdata=testSet)
+```
+
+# Facet Grid Scatter Plots of Predicted Attendance for Days of the week and Month
+```{r echo=FALSE}
+# Visualize testing data
+predict_month_plot_test <- ggplot2::ggplot(testSet, aes(x=testSet$month, y=testSet$prediction)) + ggplot2::geom_point()
+
+predict_month_plot_test + facet_grid(. ~ testSet$day_of_week) + ggplot2::theme(axis.text.x = element_text(angle = 90)) + ggplot2::xlab('Months') + ggplot2::ylab('Attendance of Fans') + ggplot2::ggtitle('Prediction of Attendance',subtitle = 'Day of the Week')
+
+
+predict_day_plot_test <- ggplot2::ggplot(testSet, aes(x=testSet$day_of_week, y=testSet$prediction)) + ggplot2::geom_point()
+
+predict_day_plot_test + facet_grid(. ~ testSet$month) + ggplot2::theme(axis.text.x = element_text(angle = 90)) + ggplot2::xlab('Days of the Week') + ggplot2::ylab('Attendance of Fans') + ggplot2::ggtitle('Prediction of Attendance',subtitle = 'Months')
+
+```
+
+# Process and Recommendation
+
+In applying a regression model on the 2012 Dodgers Game Attendance and Promotion data set, I was seeking to predict the day of the week and month with the lowest attendance that would call for more promotions for those set date games. Before beginning my analysis, I performed data preparation of the set within a Jupyter Notebook using Python. I removed initials of months, changed YES/NO to 1/0, and converted variables to be used in a better scope. By using the box plots initially on the given data, it allowed me to see the distribution of attendance between the months and the days of the week. The main challenge was to find the combination of the both since I was able to see solely months and solely the days from those visuals. Once I had an idea of which months and days, I randomly split the data for training and testing and created the model with the 70% of the allocated training data followed by using the remaining testing data to make predictions on attendance of games. By creating a multi-scatter plot for days of the week and months combined, I was able to see that in the month of May on Mondays have the lowest attendance for games. Therefore, I recommend that it would be best to run a marketing promotion for Mondays in May to increase attendance for those days and attendance overall for the team. 
