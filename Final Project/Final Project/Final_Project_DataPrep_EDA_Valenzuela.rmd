@@ -1,0 +1,136 @@
+---
+title: "Final Project Data Prep & EDA"
+author: "Gabriel Valenzuela"
+date: "6/28/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prediction Analysis Data Preparation and Exploratory Data Analysis - Video Game Sales
+
+# Data Preparation
+
+```{r echo = FALSE}
+# Import libraries
+suppressWarnings(library(tidyverse))
+suppressWarnings(library(directlabels))
+
+# Import Data
+vgsales <- read.csv('vgsales.csv')
+head(vgsales, 10)
+str(vgsales)
+
+```
+
+```{r echo=FALSE}
+# Check for null values
+apply(vgsales, 2, function(x) any(is.null(x)))
+
+# Check for empty values
+apply(vgsales, 2, function(x) any(is.na(x)))
+
+# Convert Year into numeric
+vgsales$Year <- as.numeric(vgsales$Year)
+
+# Convert Genre into characters
+vgsales$Genre <- as.character(vgsales$Genre) 
+```
+
+# Exploratory Data Analysis 
+
+```{r echo=FALSE}
+
+summary(vgsales)
+
+# North American Sales
+vgsales %>%
+  group_by(Genre) %>%
+  summarise(mean_score = mean(NA_Sales)) %>%
+  arrange(desc(mean_score)) %>%
+  head(., n=10) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(Genre, -mean_score), y=mean_score, fill=Genre), stat='identity') +
+  geom_label(aes(x=reorder(Genre, -mean_score), y=mean_score, label=round(mean_score, digits = 2))) +
+  guides(fill = FALSE) +
+  labs(title = "Top 10 Genres by Mean North American Sales", x="Genre", y='Mean Sales') +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+# European Sales
+vgsales %>%
+  group_by(Genre) %>%
+  summarise(mean_score = mean(EU_Sales)) %>%
+  arrange(desc(mean_score)) %>%
+  head(., n=10) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(Genre, -mean_score), y=mean_score, fill=Genre), stat='identity') +
+  geom_label(aes(x=reorder(Genre, -mean_score), y=mean_score, label=round(mean_score, digits = 2))) +
+  guides(fill = FALSE) +
+  labs(title = "Top 10 Genres by Mean European Sales", x="Genre", y='Mean Sales') +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+# Japan Sales
+vgsales %>%
+  group_by(Genre) %>%
+  summarise(mean_score = mean(JP_Sales)) %>%
+  arrange(desc(mean_score)) %>%
+  head(., n=10) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(Genre, -mean_score), y=mean_score, fill=Genre), stat='identity') +
+  geom_label(aes(x=reorder(Genre, -mean_score), y=mean_score, label=round(mean_score, digits = 2))) +
+  guides(fill = FALSE) +
+  labs(title = "Top 10 Genres by Mean Japan Sales", x="Genre", y='Mean Sales') +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+# Other Sales
+vgsales %>%
+  group_by(Genre) %>%
+  summarise(mean_score = mean(Other_Sales)) %>%
+  arrange(desc(mean_score)) %>%
+  head(., n=10) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(Genre, -mean_score), y=mean_score, fill=Genre), stat='identity') +
+  geom_label(aes(x=reorder(Genre, -mean_score), y=mean_score, label=round(mean_score, digits = 2))) +
+  guides(fill = FALSE) +
+  labs(title = "Top 10 Genres by Mean Other Sales", x="Genre", y='Mean Sales') +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+# Global Sales
+vgsales %>%
+  group_by(Genre) %>%
+  summarise(mean_score = mean(Global_Sales)) %>%
+  arrange(desc(mean_score)) %>%
+  head(., n=10) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(Genre, -mean_score), y=mean_score, fill=Genre), stat='identity') +
+  geom_label(aes(x=reorder(Genre, -mean_score), y=mean_score, label=round(mean_score, digits = 2))) +
+  guides(fill = FALSE) +
+  labs(title = "Top 10 Genres by Mean Global Sales", x="Genre", y='Mean Sales') +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+# Game Count per Genre
+vgsales %>%
+  group_by(Genre) %>%
+  summarise(total_games = n()) %>%
+  ggplot() +
+  geom_point(aes(x=reorder(Genre, -total_games), y=total_games), size=3) +
+  geom_segment(aes(x=reorder(Genre, -total_games),xend=reorder(Genre, -total_games),y=0,yend=total_games)) +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1)) +
+  labs(title = "Lollipop Chart of Genres by Total Game Count", x="Genre", y='Game Count')
+
+# Game Count per Platform
+vgsales %>%
+  group_by(Platform) %>%
+  summarise(counts = n()) %>%
+  arrange(desc(counts)) %>%
+  head(., n=10) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(Platform, -counts), y=counts, fill=Platform), stat='identity') +
+  geom_label(aes(x=reorder(Platform, -counts), y=counts, label=counts)) +
+  guides(fill = FALSE) +
+  labs(title = "Top 10 Platforms by Number of Games", x="Platforms", y='Total Number of Games') +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+```
+
