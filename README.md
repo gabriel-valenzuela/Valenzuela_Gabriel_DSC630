@@ -40,10 +40,6 @@ from keras.layers import LSTM
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 ```
 
-### Data Sets
-
-LINK
-
 For this anaylsis, I had prepared the data within R studio as well as performed an exploratory analysis to better understand the video game market throughout the past and to practice using both Python and R within one single project.  
 
 ### Data Preparation
@@ -237,3 +233,6 @@ North American Sales Prediction Result
 <br>
 ![NA Sales Prediction](https://github.com/gabriel-valenzuela/Valenzuela_Gabriel_DSC630/blob/master/NA_Sales.png)
 
+### Conclusion
+
+When it comes to video games as a whole, it no longer can be centered on one area of the world and be treated the same in each geographical location. For companies, being able to determine and optimize their focus on future sales of video games within each area would determine which geographical locations are purchasing video games which could then be correlated to which areas will be the next genre of consoles or simply the trend of the video game community as a whole. My deep learning predictive model allowed my project to reach its goal in that it was able to fairly predict the trends based on historical data. In the future, if someone were to carry on my project, I believe there is the possibility for it be more accurate and possibly predict further and change feature set. 
